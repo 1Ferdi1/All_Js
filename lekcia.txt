@@ -1,0 +1,121 @@
+------------Фреймворки их обозначения----------
+
+Фреймворк - это набор библиотек, архитектурных решений некоторого реализованного функционала, для упрощение написаня кода. Для оптимизации и стабильности работы кода.
+Минимизации ошибок. Стантартиззация написания кода. 
+Состоит из компонент.
+
+-css
+    style.css
+
+-js
+    components
+        App
+            App.js
+
+    Template.js
+    Companent.js
+    index.js
+
+index.html(пустой(нету разметки))
+
+
+#style.css
+    .hide{
+        display: none(видимость компонентов)
+    }
+
+
+#Template.js
+    function Template(){} - вся разметка всех компоннет записывается в прототип функции Template
+
+
+--------------------------------------------------------------------------------------------
+#Companent.js
+    class Companent{
+        constructor({id, parent, template, templateParams, callbacks = {}, className}){
+            this.id = id,
+            this.parent = parent, 
+            this.callbacks = callbacks,
+            this.render(template(templateParams), className);
+            this.addEventListeners();
+        }
+
+        show(){
+            document.getElementById(this,id).classList.remove('hide');
+        }
+
+        hide(){
+            document.getElementById(this,id).classList.add('hide');
+        }
+
+        render(template, className){
+            const elem = document.createElement('div');
+            elem.setAttribute('id', this.id);
+            if (className){
+                elem.classList.add(className);
+            }
+            elem.innerHTML = template,
+            if(this.parent){
+                document.getElementById(this.parent).appendChild(elem);
+            } else{
+                document.querySelector('body').appendChild(elem);
+            }
+        }
+
+        addEventListeners(){} - методы show, hide, render переопределять в дочерних элементах нельзя,
+            а addEventListeners переопределять можно и нужно, все обработчики событий вешаются в методе addEventListeners.
+    }
+-----------------------------------------------------------------------------------------------------------------------------
+
+--------------------------------------------------------------------
+#index.js
+    const template = new Template();
+    window.onload = function(){
+        new App({id:'app', template:template.appTemplate});
+    }
+    app - центральная компонента, включает в себя все остальные компоненты
+----------------------------------------------------------------------
+
+---------------------------------------------------
+#appTemplate.js
+    Template.prototype.appTemplate =()=>'';
+---------------------------------------------------
+
+--------------------------------------------------------
+#App.js
+    class App extends Companent{
+        constructor(options){
+            super(options);
+            new Menu({
+                id:'menu',
+                parent:this.id,
+                template:template.menuTemplate,
+                callbacks:{
+                    show(name) => this.showContent(name),
+                }
+            });
+        }
+
+        showContent(name){
+            console.log(name);
+        }
+    }
+
+
+----------------------------------------------------------
+#menuTemplate.js
+    Template.prototype.menuTemplate =()=>`
+        <button class="menu-item" data-name="target">Мишени</button>
+        <button class="menu-item" data-name="rpg">РПГ</button>
+        `;
+------------------------------------------------------------
+
+-----------------------------------------------------------------
+Menu.js
+    class Menu extends Companent{
+        addEventListeners(){
+            document.querySelector.All('.menu-item').forEach(button =>
+                button.addEventListeners('click', (event) => this.callbacks.show(event.target.dataset.name)));
+        }
+    }
+-----------------------------------------------------------------------

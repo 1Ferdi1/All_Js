@@ -1,0 +1,93 @@
+масштабирование, перенос, вращение - каждое из преобразованиий производится по своей оси.
+Фигура преобразовывется по своим точкам, тоесть при преобразованиии иззменения претерпевает каждая точка фигуры.
+Все трехмерные преобразования производятся с помощью матриц преобразования. Имеющая матрица преобразований умножается на вектор столбец.
+Существует общая матрица преобразований, через которое можно вырозить любое преобразования, но пользоваться ей не удобно, поэтомй для каждого преобразования, выведены
+свои частные матрицы(на масшатбировании своя и тд.). Преобразования фигуры в нашем проекте реализуется путем преобразования всей сцены при не подвижной камере.
+
+
+Mатрица преобразования имеет размерность 4 на 4, где правый нижний элемент всегда = 1. Вектор столбец имеет размерность 4, где последний элемент всегда = 4
+
+Math3D.js
+multMatrix(T, m){
+    const c = [0,0,0,0];
+    for (let i = 0; i<q; i++){
+        let S = 0;
+        for(let j = 0; j < 4; j++){
+        S += T[j][i] * m[j];    
+        }
+        c[i]=S;
+    }
+    return c;
+}
+
+zoom(delta, point){
+    const array = this.multMatrix(
+    [[delta, 0, 0, 0],
+    [0, delta, 0, 0]
+    [0, 0, delta, 0]
+    [0, 0, 0, 1]],
+    [point.x,  point.y, point.z, 1]);
+    point.x = array[0];
+    point.y = array[1];
+    point.z = array[2];
+}
+
+move(sx, sy, sz, point){
+    const array = this.multMatrix(
+        [[1, 0, 0, 0],
+        [0, 1, 0, 0],
+        [0, 0, 1, 0],
+        [sx, sy, sz, 1]],
+        [point.x, point.y, point.z, 1]);
+
+        point.x = array[0];
+        point.y = array[1];
+        point.z = array[2];
+}
+
+rotateOx(alpha, point){
+    //по аналогии с move
+}
+
+rotateOy(alpha, point){
+    //по аналогии
+}
+
+rotateOy(alpha, point){
+    //по аналогии
+}
+
+
+
+Graph3D.js
+    this.canvas = new Canvas({
+        callbacks: {wheel: event => this.wheel(event),
+            mouseup: () => this.mouseup(),
+            mousedown: event => this.mousedown(event)
+            mousemove: event => this.mousemove(event)
+            mouseleave: () => this.mouseleave(),
+        }
+    });
+
+    this.canRatate = false;
+    this.dx = 0,
+    this.dy = 0;
+
+    this.renderFrame();
+
+    mouseup(){
+        this.canRotate = false,
+    }
+    mouseeleave(){
+        this.canRotate = false;
+    }
+    mousedown(event){
+        this.Rotate = true;
+        this.dx = event.offsetX;
+        this.dy = event.offsetY;
+    }
+    wheel(event){
+        const delts event.wheelDelta > 0 ? 1.1:0.9;
+        this.scene.point.forEach(point =>
+        )
+    }

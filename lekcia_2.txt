@@ -1,0 +1,130 @@
+трехмерная графика
+любая трехмерная сцена состоит из точек, между которыми проводятся ребра, натягиваются что-то там ...
+чтобы отобразить сцену на экране необходимо для каждой точки этой сцены получить проекцию на плоскости перпендикулярной направлению зрения
+упрощение задачи:
+    -камера всегда расположена на оси oZ
+    -камера всегда направлена вдоль оси oZ к центру координат
+
+структуры данных
+Math3D->Figures->Cube.js
+Math3D->Math3D.js
+Math3D->entities->Point.js
+                ->Edge.js
+                ->Polygon.js
+                ->Figure.js
+class Point{
+    constructor(x=0,y=0,z=0){
+        this.x=x;
+        this.y=y;
+        this.z=z;
+    }
+}
+
+в ребро мы будем записывать в качестве точек номера из массива точек,
+Edge.js
+class edge{
+    constructor(p1=0,p2=0){
+        this.p1=p1;
+        this.p2=p2;
+    }
+}
+
+Polygon.js
+class Polygon{
+    constructor(points=[], color='#f80000'){
+        this.points=points;
+        this.color=color;
+    }
+}
+
+
+Figure.js
+class Figure{
+    constructor(points=[], edge=[], polygons=[]){
+        this.points=points;
+        this.edge=edge;
+        this.polygons=polygons;
+    }
+}
+
+
+Math3D.js
+class Math3D{
+    constructor({WIN}){
+        this.WIN=WIN;
+    }
+    xs(Point){
+        const zs = this.WIN.CENTER.z;
+        const z0 = this.WIN.CAMERA.z;
+        const x0 = this.WIN.CAMERA.x;
+        return((Point.x - x0)/(Point.z - z0) * (zs - z0) + (x0));
+    }
+
+    ys(Point){
+        const zs = this.WIN.CENTER.z;
+        const z0 = this.WIN.CAMERA.z;
+        const y0 = this.WIN.CAMERA.y;
+        return((Point.y - y0)/(Point.z - z0) * (zs - z0) + (y0));
+    }
+}
+
+
+Cube.js
+class Cube extends Figure{
+    constructor(size=10){
+        super();
+        this.points=[
+            new Point(-size,size,size), //0
+            new Point(size,size,size), //1
+            new Point(size,-size,size), //2
+            new Point(-size,-size,size), //3
+            // написать другие 4 точки которые сзади куба(фотка в телефоне)
+        ]
+
+        this.edges=[
+            new Edge(0,1),
+            new Edge(1,2),
+            new Edge(2,3),
+            new Edge(3,0),
+            // дописать ещё 4 точки 
+        ]
+    }
+}
+
+
+class Graph3D extends Component{
+    constructor(option){
+        super(option),
+        this.WIN={
+            LEFT:-5,
+            BOTTOM:-5,
+            WIDTH:10,
+            HEIGHT:10,
+            CENTER:new Point(0,0,30),
+            CAMERA:new Point(0,0,50),
+        }
+        this.scene= new Cube();
+        this.Math3D=new Math3D({WIN:this.WIN});
+        this.canvas=new Canvas({
+            id: 'canvas3D',
+            width:800,
+            height:800,
+            WIN:this.WIN,
+            callbacks:{сюда пишем пустые калбэки}
+        });
+
+        this.renderFrame();
+    }
+
+    renderFrame(){
+        this.canvas.clear();
+        this.scene.edges.forEach(edge=>{
+            const p1=this.scene.points[edge.p1];
+            const p2=this.scene.points[edge.p2];
+            this.canvas.line(this.Math3D.xs(p1),this.Math3D.ys(p1), this.Math3D.xs(p2), this.Math3D.ys(p2));
+        });
+
+        this.scene.points.forEach(Point=>this.canvas.Point(this.Math3D.xs(p), this.Math3D.ys(p)));
+
+    }
+}
