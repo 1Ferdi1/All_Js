@@ -16,7 +16,6 @@ class Cylinder extends Figure {
     generatePoints() {
         const angleStep = (2 * Math.PI) / this.segments;
         
-        // Генерация двух окружностей (верх и низ)
         for (let level = -this.height; level <= this.height; level += this.height * 2) {
             for (let i = 0; i < this.segments; i++) {
                 const angle = angleStep * i;
@@ -30,7 +29,6 @@ class Cylinder extends Figure {
     }
 
     generateEdges() {
-        // Соединение точек в окружностях
         for (let i = 0; i < this.segments; i++) {
             this.edges.push(new Edge(i, (i + 1) % this.segments));
             this.edges.push(new Edge(
@@ -39,14 +37,12 @@ class Cylinder extends Figure {
             ));
         }
 
-        // Вертикальные рёбра между окружностями
         for (let i = 0; i < this.segments; i++) {
             this.edges.push(new Edge(i, i + this.segments));
         }
     }
 
     generatePolygons() {
-        // Боковые грани
         for (let i = 0; i < this.segments; i++) {
             const next = (i + 1) % this.segments;
             this.polygons.push(new Polygon([
@@ -57,7 +53,6 @@ class Cylinder extends Figure {
             ], '#FF0000'));
         }
 
-        // Верхняя и нижняя крышки
         this.polygons.push(new Polygon(
             Array.from({length: this.segments}, (_, i) => i), 
             '#00FF00'

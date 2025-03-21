@@ -1,0 +1,10 @@
+ ДЗ: добавить настройки для каждой фигуры отдельно, добавить сферу, бублик, чашку(по желанию). 
+
+
+
+ class Light extends Point{
+    condtrucnor(x, y, z, lumen = 1000){
+        super(x, y, z);
+        this.lumen = lumen;
+    }
+ }

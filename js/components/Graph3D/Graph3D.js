@@ -15,8 +15,8 @@ class Graph3D extends Component {
         this.math3D = new Math3D({ WIN: this.WIN });
         this.canvas = new Canvas({
             id: 'canvas3D',
-            width: 500,
-            height: 500,
+            width: 600,
+            height: 600,
             WIN: this.WIN,
             callbacks: {
                 wheel: (event) => this.wheel(event),
@@ -112,6 +112,8 @@ class Graph3D extends Component {
         this.canvas.clear();
 
         if (this.printPolygons) {
+            this.math3D.calcDistance(this.scene, this.WIN.CAMERA, 'distance');
+            this.math3D.sortByArtistAlgorithm(this.scene.polygons);
             this.scene.polygons.forEach(polygon => {
                 const points = polygon.points.map(index => this.scene.points[index]);
                 const projectedPoints = points.map(point => ({
