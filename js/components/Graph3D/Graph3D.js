@@ -9,6 +9,7 @@ class Graph3D extends Component {
             HEIGHT: 10,
             CENTER: new Point(0, 0, 30),
             CAMERA: new Point(0, 0, 50),
+            LIGHT: new Light(-40, 5, 10, 25000)
         };
 
         this.scene = new Cube();
@@ -41,7 +42,7 @@ class Graph3D extends Component {
             cylinder: () => new Cylinder()
         };
     }
-
+    
     wheel(event) {
         const delta = (event.wheelDelta > 0) ? 1.1 : 0.9;
         this.scene.points.forEach(point => this.math3D.zoom(delta, point));
@@ -68,7 +69,7 @@ class Graph3D extends Component {
             const gradus = Math.PI / 180 / ROTATION_SENSITIVITY;
 
             this.scene.points.forEach(point => {
-                this.math3D.rotateOy(-(this.dx-event.offsetX) *gradus, point);
+                this.math3D.rotateOy(-(this.dx-event.offsetX) * gradus, point);
                 this.math3D.rotateOx(-(this.dy-event.offsetY) * gradus, point);
             });
 
@@ -114,13 +115,19 @@ class Graph3D extends Component {
         if (this.printPolygons) {
             this.math3D.calcDistance(this.scene, this.WIN.CAMERA, 'distance');
             this.math3D.sortByArtistAlgorithm(this.scene.polygons);
+            this.math3D.calcDistance(this.scene, this.WIN.LIGHT, 'lumen');
             this.scene.polygons.forEach(polygon => {
                 const points = polygon.points.map(index => this.scene.points[index]);
                 const projectedPoints = points.map(point => ({
                     x: this.math3D.xs(point),
                     y: this.math3D.ys(point)
                 }));
-                this.canvas.polygon(projectedPoints, polygon.color);
+                const lumen = this.math3D.calcIllumination(polygon.lumen, this.WIN.LIGHT.lumen);
+                let{r, g, b} = polygon.color;
+                r=Math.round(r*lumen);
+                g=Math.round(g*lumen);
+                b=Math.round(b*lumen);
+                this.canvas.polygon(projectedPoints, polygon.rgbToHex(r, g, b));
             });
         }
 

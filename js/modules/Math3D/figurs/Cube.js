@@ -28,12 +28,12 @@ class Cube extends Figure{
         ]
 
         this.polygons=[
-            new Polygon([0, 1, 2, 3], 'white'),
-            new Polygon([0, 4, 7, 3], 'blue'),
-            new Polygon([0, 4, 5, 1], 'red'),
-            new Polygon([1, 2, 6, 5], 'green'),
-            new Polygon([2, 3, 7, 6], 'pink'),
-            new Polygon([4, 5, 6, 7], 'yellow')
+            new Polygon([0, 1, 2, 3], '#ff0000'),
+            new Polygon([0, 4, 7, 3], '#0400fa'),
+            new Polygon([0, 4, 5, 1], '#fff'),
+            new Polygon([1, 2, 6, 5], '#15ff00'),
+            new Polygon([2, 3, 7, 6], '#ea00ff'),
+            new Polygon([4, 5, 6, 7], '#fbff00')
         ]
     }
 }
