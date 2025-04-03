@@ -1,9 +1,10 @@
 class Cylinder extends Figure {
-    constructor(segments = 20, height = 15, radius = 10) {
+    constructor(radialSegments = 20, height = 15, radius = 10, heightSegments = 5) {
         super();
-        this.segments = segments;
+        this.radialSegments = radialSegments;
         this.height = height;
         this.radius = radius;
+        this.heightSegments = heightSegments;
         this.points = [];
         this.edges = [];
         this.polygons = [];
@@ -14,53 +15,60 @@ class Cylinder extends Figure {
     }
 
     generatePoints() {
-        const angleStep = (2 * Math.PI) / this.segments;
-        
-        for (let level = -this.height; level <= this.height; level += this.height * 2) {
-            for (let i = 0; i < this.segments; i++) {
+        const angleStep = (2 * Math.PI) / this.radialSegments;
+        const verticalStep = (2 * this.height) / (this.heightSegments - 1);
+
+        for (let h = 0; h < this.heightSegments; h++) {
+            const z = -this.height + h * verticalStep;
+            for (let i = 0; i < this.radialSegments; i++) {
                 const angle = angleStep * i;
                 this.points.push(new Point(
                     this.radius * Math.cos(angle),
                     this.radius * Math.sin(angle),
-                    level
+                    z
                 ));
             }
         }
     }
 
     generateEdges() {
-        for (let i = 0; i < this.segments; i++) {
-            this.edges.push(new Edge(i, (i + 1) % this.segments));
-            this.edges.push(new Edge(
-                i + this.segments, 
-                ((i + 1) % this.segments) + this.segments
-            ));
+        for (let ring = 0; ring < this.heightSegments; ring++) {
+            const startIdx = ring * this.radialSegments;
+            for (let i = 0; i < this.radialSegments; i++) {
+                this.edges.push(new Edge(
+                    startIdx + i,
+                    startIdx + (i + 1) % this.radialSegments
+                ));
+            }
         }
 
-        for (let i = 0; i < this.segments; i++) {
-            this.edges.push(new Edge(i, i + this.segments));
+        for (let i = 0; i < this.radialSegments; i++) {
+            for (let ring = 0; ring < this.heightSegments - 1; ring++) {
+                this.edges.push(new Edge(
+                    ring * this.radialSegments + i,
+                    (ring + 1) * this.radialSegments + i
+                ));
+            }
         }
     }
 
     generatePolygons() {
-        for (let i = 0; i < this.segments; i++) {
-            const next = (i + 1) % this.segments;
-            this.polygons.push(new Polygon([
-                i,
-                next,
-                next + this.segments,
-                i + this.segments
-            ], '#FF0000'));
+        for (let ring = 0; ring < this.heightSegments - 1; ring++) {
+            for (let i = 0; i < this.radialSegments; i++) {
+                const a = ring * this.radialSegments + i;
+                const b = ring * this.radialSegments + (i + 1) % this.radialSegments;
+                const c = (ring + 1) * this.radialSegments + (i + 1) % this.radialSegments;
+                const d = (ring + 1) * this.radialSegments + i;
+                
+                this.polygons.push(new Polygon([a, b, c, d], '#FF0000'));
+            }
         }
 
-        this.polygons.push(new Polygon(
-            Array.from({length: this.segments}, (_, i) => i), 
-            '#00FF00'
-        ));
+        const bottomCap = Array.from({length: this.radialSegments}, (_, i) => i);
+        this.polygons.push(new Polygon(bottomCap, '#00FF00'));
         
-        this.polygons.push(new Polygon(
-            Array.from({length: this.segments}, (_, i) => i + this.segments), 
-            '#0000FF'
-        ));
+        const topCapStart = (this.heightSegments - 1) * this.radialSegments;
+        const topCap = Array.from({length: this.radialSegments}, (_, i) => topCapStart + i);
+        this.polygons.push(new Polygon(topCap, '#0000FF'));
     }
 }

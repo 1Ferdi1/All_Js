@@ -39,7 +39,9 @@ class Graph3D extends Component {
         this.addEventListeners();
         this.figures = {
             cube: () => new Cube(),
-            cylinder: () => new Cylinder()
+            cylinder: () => new Cylinder(),
+            sphere: () => new Sphere(),
+            torus: () => new Torus
         };
     }
     

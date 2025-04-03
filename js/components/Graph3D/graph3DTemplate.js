@@ -12,5 +12,7 @@ Template.prototype.graph3DTemplate = () => `
     <select id = 'listFigure'>
         <option value = 'cube'> Куб </option>
         <option value = 'cylinder'> Цилиндр </option>
+        <option value = 'sphere'> Шар </option>
+        <option value = 'torus'> Бублик </option>
     </select>
 `;
